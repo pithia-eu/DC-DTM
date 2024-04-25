@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # set python version, venv directory and requirements file
-PYTHON_VERSION=3.9
+PYTHON_VERSION=3
 VENV_NAME=venv
 REQUIREMENTS=requirements.txt
 
@@ -23,6 +23,6 @@ source $VENV_NAME/bin/activate
 python -m pip install --upgrade pip
 
 # update the requirements
-pip install -r $REQUIREMENTS --upgrade
+pip3 install -r $REQUIREMENTS --upgrade
 
 echo "Setup (or update) completed."
