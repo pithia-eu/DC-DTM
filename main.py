@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 from fastapi import FastAPI, Query
 from fastapi.responses import StreamingResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import HTTPException
 
 RUNS_PATH = os.path.join(os.getcwd(), 'runs')
 
@@ -181,7 +182,7 @@ async def plot_results(execution_id: int,
         return response
 
     except Exception as e:
-        return e.__str__
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/results", tags=["results"],
@@ -247,4 +248,4 @@ async def download_all_results(execution_id: int):
         return response
 
     except Exception as e:
-        return e.__str__
+        raise HTTPException(status_code=500, detail=str(e))
