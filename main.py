@@ -152,7 +152,7 @@ async def plot_results(execution_id: int,
                                                'Tinf',
                                                'Tz'])):
     try:
-        os.chdir(os.path.join(RUNS_PATH, execution_id))
+        os.chdir(os.path.join(RUNS_PATH, str(execution_id)))
         latidute = []
         counter = 0
         for i in reversed(range(-87, 88)):
@@ -195,9 +195,8 @@ async def plot_results(execution_id: int,
          response_class=FileResponse)
 async def download_all_results(execution_id: int):
     try:
-        os.chdir(os.path.join(RUNS_PATH, execution_id))
-        zip_temp_path = os.path.join(RUNS_PATH, execution_id,'DTM20F107Kp_{execution_id}.zip')
-        # zip_temp_path = f'/home/ubuntu/experiments/dtm/runs/{execution_id}/DTM20F107Kp_{execution_id}.zip'
+        os.chdir(os.path.join(RUNS_PATH, str(execution_id)))
+        zip_temp_path = os.path.join(RUNS_PATH, str(execution_id),'DTM20F107Kp_{execution_id}.zip')
         if os.path.exists(zip_temp_path):
             zip_file_path = zip_temp_path
         else:
