@@ -1,6 +1,6 @@
 [Unit]
-Description=Schema update service
-Documentation=https://github.com/pithia-eu/experiments/blob/main/dtm/README.md
+Description=Data Collection DTm Rest API
+Documentation=https://github.com/pithia-eu/DC-DTM/blob/main/README.md
 
 [Service]
 Type=simple
@@ -10,7 +10,7 @@ TimeoutStartSec=0
 Restart=on-failure
 RestartSec=30s
 #ExecStartPre=
-ExecStart=/home/ubuntu/experiments/dtm/start_dtm.sh
+ExecStart=/home/ubuntu/DC-DTM/start_dtm.sh
 SyslogIdentifier=Diskutilization
 #ExecStop=
 
