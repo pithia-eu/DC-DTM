@@ -11,14 +11,10 @@ if [ ! -f "$REQUIREMENTS" ]; then
     exit 1
 fi
 
-# check if venv directory already exists
-if [ -d "$VENV_NAME" ]; then
-    echo "The directory $VENV_NAME already exists. Please remove it before running this script."
-    exit 1
+# create a new venv if it doesn't exist
+if [ ! -d "$VENV_NAME" ]; then
+    python$PYTHON_VERSION -m venv $VENV_NAME
 fi
-
-# create a new venv
-python3.9 -m venv $VENV_NAME
 
 # activate the venv
 source $VENV_NAME/bin/activate
@@ -26,7 +22,7 @@ source $VENV_NAME/bin/activate
 # Update pip to the latest version
 python -m pip install --upgrade pip
 
-# install the requirements
-pip install -r $REQUIREMENTS
+# update the requirements
+pip install -r $REQUIREMENTS --upgrade
 
-echo "Set up completed."
+echo "Setup (or update) completed."
