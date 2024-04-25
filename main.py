@@ -11,6 +11,8 @@ from fastapi import FastAPI, Query
 from fastapi.responses import StreamingResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 
+RUNS_PATH = os.path.join(os.getcwd(), 'runs')
+
 description = """
 The Drag Temperature Model is the in-house developed semi-empirical model of the thermosphere. Its main application is in orbit determination and prediction. It provides point-wise predictions of total mass density (in g/cm3), temperature (K), and partial densities of the main constituents (O2, N2, O, He in g/cm3). The solar driver is F10.7 and the geomagnetic driver of the model is Kp. The backbone of the data used to fit the model coefficients are the high-resolution and precision accelerometer-inferred densities of the GOCE, CHAMP and GRACE missions. The DTM2020 model is available on Github (F90 code).
 
@@ -91,7 +93,7 @@ async def execute(fm: float = model.fm,
         r = r.replace('Model', 'parameter:')
         return r
 
-    os.chdir('/home/ubuntu/experiments/dtm/runs')
+    os.chdir(RUNS_PATH)
     folder_created = False
     while not folder_created:
         id_ = randint(1000000000, 9999999999)
@@ -149,7 +151,7 @@ async def plot_results(execution_id: int,
                                                'Tinf',
                                                'Tz'])):
     try:
-        os.chdir(f'/home/ubuntu/experiments/dtm/runs/{execution_id}')
+        os.chdir(os.path.join(RUNS_PATH, execution_id))
         latidute = []
         counter = 0
         for i in reversed(range(-87, 88)):
@@ -192,8 +194,9 @@ async def plot_results(execution_id: int,
          response_class=FileResponse)
 async def download_all_results(execution_id: int):
     try:
-        os.chdir(f'/home/ubuntu/experiments/dtm/runs/{execution_id}')
-        zip_temp_path = f'/home/ubuntu/experiments/dtm/runs/{execution_id}/DTM20F107Kp_{execution_id}.zip'
+        os.chdir(os.path.join(RUNS_PATH, execution_id))
+        zip_temp_path = os.path.join(RUNS_PATH, execution_id,'DTM20F107Kp_{execution_id}.zip')
+        # zip_temp_path = f'/home/ubuntu/experiments/dtm/runs/{execution_id}/DTM20F107Kp_{execution_id}.zip'
         if os.path.exists(zip_temp_path):
             zip_file_path = zip_temp_path
         else:
