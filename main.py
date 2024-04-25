@@ -1,6 +1,5 @@
 import os
 import shutil
-import io
 import numpy
 import pandas
 import zipfile
@@ -13,7 +12,7 @@ from fastapi.responses import StreamingResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 description = """
-The Drag Temperature Model is the in-house developed semi-empirical model of the thermosphere. Its main application is in orbit determination and prediction. It provides point-wise predictions of total mass density, temperature, and partial densities of the main constituents (O2, N2, O, He). The solar driver is F10.7 and the geomagnetic driver of the model is Kp. The backbone of the data used to fit the model coefficients are the high-resolution and precision accelerometer-inferred densities of the GOCE, CHAMP and GRACE missions. The DTM2020 model is available on Github (F90 code).
+The Drag Temperature Model is the in-house developed semi-empirical model of the thermosphere. Its main application is in orbit determination and prediction. It provides point-wise predictions of total mass density (in g/cm3), temperature (K), and partial densities of the main constituents (O2, N2, O, He in g/cm3). The solar driver is F10.7 and the geomagnetic driver of the model is Kp. The backbone of the data used to fit the model coefficients are the high-resolution and precision accelerometer-inferred densities of the GOCE, CHAMP and GRACE missions. The DTM2020 model is available on Github (F90 code).
 
 ## Functionalities:
 * Execute the model.
@@ -36,10 +35,6 @@ tags_metadata = [
         "name": "plots",
         "description": "Create a plot of the selected file by passing an execution id.<br>"
                        "The plot can be downloaded, and presents data from 0-24 per 1hr, for latitude in range, +87 to -87, per 3 degrees.",
-    },
-    {
-        "name": "files",
-        "description": "Download an output file by passing an execution id."
     },
     {
         "name": "results",
@@ -65,17 +60,18 @@ app.add_middleware(
 )
 
 
+# update fm, fl, akp1, akp3 to float
 class Model(BaseModel):
     fm: float = Field(default=180, title="Mean F10.7 flux of last 81 day", ge=60,
-                    le=250)  # Mean F10.7 flux of last 81 day
+                      le=250)  # Mean F10.7 flux of last 81 day
     fl: float = Field(default=100, title="Daily F10.7 flux of previous day", ge=60,
-                    le=300)  # Daily F10.7 flux of previous day
+                      le=300)  # Daily F10.7 flux of previous day
     alt: int = Field(default=300, title="Altitude", ge=120, le=1500)  # Altitude
     day: int = Field(default=180, title="Day of the year", ge=1, le=366)  # Day of year
     akp1: float = Field(default=0, title="Geomagnetic activity index kp delayed by 3 hours", ge=0,
-                      le=9)  # Geomagnetic activity index kp
+                        le=9)  # Geomagnetic activity index kp
     akp3: float = Field(default=0, title="Mean geomagnetic activity index kp of the last 24 hours", ge=0,
-                      le=9)  # Geomagnetic activity index kp
+                        le=9)  # Geomagnetic activity index kp
 
 
 model = Model()
@@ -186,31 +182,6 @@ async def plot_results(execution_id: int,
         return e.__str__
 
 
-@app.get("/files", tags=["files"],
-         responses={
-             200: {
-                 "content": {"media/csv": {}},
-                 "description": "Return the file as a media/csv.",
-             }
-         },
-         response_class=FileResponse)
-async def download_results_files(execution_id: int,
-                                 data: str = Query(enum=['He',
-                                                         'N2',
-                                                         'O',
-                                                         'ro',
-                                                         'Tinf',
-                                                         'Tz'])):
-    try:
-        os.chdir(f'/home/ubuntu/experiments/dtm/runs/{execution_id}')
-        response = FileResponse(f'DTM20F107Kp_{data}.datx', media_type="text/csv")
-        response.headers["Content-Disposition"] = f"attachment; filename=DTM20F107Kp_{execution_id}_{data}.csv"
-        print(response.headers)
-        return response
-    except Exception as e:
-        return e.__str__
-
-
 @app.get("/results", tags=["results"],
          responses={
              200: {
@@ -255,7 +226,6 @@ async def download_all_results(execution_id: int):
                 plt.title(f'DTM20F107Kp_{data}.data')
                 fig.savefig(f'DTM20F107Kp_{data}.png')
 
-            # io_ = io.BytesIO()
             zip_file_path = zip_temp_path
             zip_file = zipfile.ZipFile(zip_file_path, "w")
 
@@ -264,7 +234,7 @@ async def download_all_results(execution_id: int):
             for file in files:
                 if file.endswith('.datx') or file.endswith('.png'):
                     files_to_zip.append(file)
-            # with zipfile.ZipFile(io_, mode='w') as zip:
+
             for file in files_to_zip:
                 zip_file.write(file)
             zip_file.close()
