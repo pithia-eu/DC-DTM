@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # set python version, venv directory and requirements file
-PYTHON_VERSION=3
+PYTHON_VERSION=3.10
 VENV_NAME=venv
 REQUIREMENTS=requirements.txt
 
