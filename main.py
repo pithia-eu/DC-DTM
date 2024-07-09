@@ -49,7 +49,8 @@ tags_metadata = [
 app = FastAPI(title='DTM2020-operational: semi-empirical thermosphere model',
               description=description,
               version="1.0",
-              openapi_tags=tags_metadata
+              openapi_tags=tags_metadata,
+              root_path="/dc-dtm"
               )
 
 origins = ["*"]
