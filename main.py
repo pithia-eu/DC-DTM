@@ -53,14 +53,14 @@ app = FastAPI(title='DTM2020-operational: semi-empirical thermosphere model',
               root_path="/dc-dtm"
               )
 
-origins = ["*"]
 
+# Configure CORS for all domains
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    # allow_origins=["*"],  # Allows all origins
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
 )
 
 
